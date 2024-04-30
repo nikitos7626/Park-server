@@ -1,7 +1,8 @@
 const Router = require('express')
 const router = new Router()
+const ticketController = require('../controller/ticketController')
 
-router.get('/')
+router.get('/getTickets', ticketController.getAll)
 router.post('/')
 router.get('/')
 

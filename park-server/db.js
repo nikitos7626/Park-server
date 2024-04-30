@@ -1,13 +1,13 @@
-const {Sequelize} = require('sequelize');
+const { Sequelize } = require('sequelize');
 
 
-module.exports= new Sequelize(
+module.exports = new Sequelize(
     "online_park",
     "root",
     "1234",
     {
-        dialect:"mysql",
-        host:"localhost",
+        dialect: "mysql",
+        host: "localhost",
         port: 3306
     }
 )
