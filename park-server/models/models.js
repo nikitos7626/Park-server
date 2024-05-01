@@ -8,7 +8,7 @@ const User = Sequelize.define('user', {
     email: { type: DataTypes.STRING, unique: true },
     role: { type: DataTypes.STRING, defaultValue: 'USER' },
     password: { type: DataTypes.STRING }
-});
+}); 
 
 const Ticket = Sequelize.define('ticket', {
     ticket_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },

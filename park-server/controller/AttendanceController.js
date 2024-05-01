@@ -29,8 +29,8 @@ class AttendanceController {
 
     async getHistoryByAttraction(req, res, next) {//Возвращает историю посещений определенного аттракциона.
         try {
-            const { ticketId } = req.params;
-            const attendance = await Attendance.findAll({ where: { ticketId } });
+            const { code } = req.params;
+            const attendance = await Attendance.findAll({ where: { code } });
             return res.json(attendance);
         } catch (e) {
             next(ApiError.badRequest(e.message));

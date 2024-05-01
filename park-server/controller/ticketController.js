@@ -1,6 +1,7 @@
 const ApiError = require('../error/Apierror')
 const { Ticket } = require('../models/models')
-
+const {User} = require('../models/models')
+const authMiddleware = require('../middleware/authMiddleware')
 
 class ticketController {
 
@@ -11,7 +12,7 @@ class ticketController {
             if (!user) {
               return next(ApiError.badRequest('User not found'));
             }
-            const ticket = await Ticket.create({ code, price, userId });
+            const ticket = await Ticket.create({code,price,userId});
             return res.json(ticket);
           } catch (e) {
             next(ApiError.badRequest(e.message));
