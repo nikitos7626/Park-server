@@ -18,6 +18,12 @@ const Ticket = Sequelize.define('ticket', {
     used_at: { type: DataTypes.DATE }
 });
 
+const Attraction = Sequelize.define('attraction', {
+    attraction_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    code: { type: DataTypes.STRING, unique: true },
+    name: { type: DataTypes.STRING },
+    price: { type: DataTypes.FLOAT },
+});
 
 
 const Attendance = Sequelize.define('attendance', {//Содержит информацию о времени посещения
@@ -35,9 +41,14 @@ Attendance.belongsTo(User);
 
 Ticket.hasMany(Attendance);
 Attendance.belongsTo(Ticket);
+Attraction.hasMany(Ticket);
+Ticket.belongsTo(Attraction);
+
+
 
 module.exports = {
     User,
     Ticket,
-    Attendance
+    Attendance,
+    Attraction
 };
