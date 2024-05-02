@@ -12,7 +12,7 @@ const User = Sequelize.define('user', {
 
 const Ticket = Sequelize.define('ticket', {
     ticket_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    code: { type: DataTypes.STRING },
+    name: {type:DataTypes.STRING},
     price: { type: DataTypes.INTEGER },
     status: { type: DataTypes.STRING, defaultValue: 'ACTIVE' }, 
     used_at: { type: DataTypes.DATE }
@@ -20,7 +20,6 @@ const Ticket = Sequelize.define('ticket', {
 
 const Attraction = Sequelize.define('attraction', {
     attraction_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    code: { type: DataTypes.STRING, unique: true },
     name: { type: DataTypes.STRING },
     price: { type: DataTypes.FLOAT },
 });

@@ -10,7 +10,6 @@ class AttractionController{
             const attraction = await Attraction.create({name,price})
             res.json({attraction})
 
-
         }catch(e){
             next(ApiError.badRequest('Неправильно введены значения аттракиона'))
         }

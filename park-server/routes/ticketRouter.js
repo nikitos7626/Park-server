@@ -5,7 +5,7 @@ const authMiddleware =require('../middleware/authMiddleware')
 
 
 router.get('/getTickets',ticketController.getAll)
-router.post('/buy',ticketController.purchase)
+router.post('/buy',authMiddleware,ticketController.purchase)
 router.get('/')
 
 module.exports = router

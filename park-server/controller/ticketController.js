@@ -1,18 +1,28 @@
 const ApiError = require('../error/Apierror')
 const { Ticket } = require('../models/models')
-const {User} = require('../models/models')
+const {User,Attraction} = require('../models/models')
 const authMiddleware = require('../middleware/authMiddleware')
+const jwt = require('jsonwebtoken')
+const config = require('../config')
+
+const generateJwt = (user_id,name_attraction,price)=>{
+    return jwt.sign(
+        {user_id,name_attraction,price},
+        config.jwtSecret,
+        {expiresIn:'24h'})
+}
+
 
 class ticketController {
 
     async purchase(req,res,next){//покупка билетов
         try {
-            const { userId, code, price } = req.body;
-            const user = await User.findByPk(userId);
-            if (!user) {
-              return next(ApiError.badRequest('User not found'));
-            }
-            const ticket = await Ticket.create({code,price,userId});
+                const {name_attraction,price} = req.body;
+                const attraction = await Attraction.findOne({where:{name:name_attraction}})
+                if(!attraction){
+                    next(ApiError.badRequest('Такого аттракциона не существует'))
+                }
+                
             return res.json(ticket);
           } catch (e) {
             next(ApiError.badRequest(e.message));

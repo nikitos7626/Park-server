@@ -18,7 +18,6 @@ class userController {
         const {email,password,role} = req.body
         if(!email || !password){
             return next(ApiError.badRequest('Неккоректная почта или пароль'))
-
         }
         const candidate = await User.findOne({where:{email}})
         if(candidate){
