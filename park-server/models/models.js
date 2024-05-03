@@ -3,8 +3,7 @@ const Sequelize = require('../db');
 
 const User = Sequelize.define('user', {
     user_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING },
-    surname: { type: DataTypes.STRING },
+    balance:{type:DataTypes.INTEGER},
     email: { type: DataTypes.STRING, unique: true },
     role: { type: DataTypes.STRING, defaultValue: 'USER' },
     password: { type: DataTypes.STRING }
@@ -22,6 +21,7 @@ const Attraction = Sequelize.define('attraction', {
     attraction_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING },
     price: { type: DataTypes.FLOAT },
+    working_hours: { type: DataTypes.STRING }
 });
 
 
