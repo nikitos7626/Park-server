@@ -20,7 +20,7 @@ class userController {
             return next(ApiError.badRequest('Неккоректная почта или пароль'))
         }
         const candidate = await User.findOne({ where: { email } })
-        if (candidate) {
+        if (candidate) {    
             return next(ApiError.badRequest('Пользователь с такой почтой уже существует'))
         }
         const hashPassword = await bcrypt.hash(password, 5)

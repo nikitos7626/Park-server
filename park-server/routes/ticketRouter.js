@@ -4,8 +4,6 @@ const ticketController = require('../controller/ticketController')
 const authMiddleware =require('../middleware/authMiddleware')
 
 
-router.get('/getTickets',ticketController.getAll)
-router.post('/buy',authMiddleware,ticketController.purchase)
-router.get('/')
-
+router.post('/buy',authMiddleware,ticketController.buyTicket)
+router.post('/useTicket',authMiddleware,ticketController.useTicket)
 module.exports = router

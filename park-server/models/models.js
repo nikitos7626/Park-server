@@ -11,8 +11,8 @@ const User = Sequelize.define('user', {
 
 const Ticket = Sequelize.define('ticket', {
     ticket_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: {type:DataTypes.STRING},
-    price: { type: DataTypes.INTEGER },
+    name: {type:DataTypes.STRING,unique:true},
+    username: { type: DataTypes.STRING },   
     status: { type: DataTypes.STRING, defaultValue: 'ACTIVE' }, 
     used_at: { type: DataTypes.DATE }
 });

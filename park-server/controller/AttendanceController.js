@@ -1,21 +1,7 @@
 const ApiError = require('../error/Apierror')
-const { Ticket, Attendance } = require('../models/models')
+const {Attendance } = require('../models/models')
 
 class AttendanceController {
-    async use(req, res, next) {
-        try {
-            const { ticketId, userId } = req.body;
-            const ticket = await Ticket.findOne({ where: { ticket_id: ticketId, userId } });//Позволяет пользователю использовать (посетить) определенный аттракцион.
-            if (!ticket || ticket.status !== 'ACTIVE') {
-                return next(ApiError.badRequest('Invalid ticket'));
-            }
-            await ticket.update({ status: 'USED', used_at: new Date() });
-            const attendance = await Attendance.create({ ticketId, userId });
-            return res.json(attendance);
-        } catch (e) {
-            next(ApiError.badRequest(e.message));
-        }
-    }
 
     async getHistoryByUser(req, res, next) { //Возвращает историю посещений определенного пользователя.
         try {
