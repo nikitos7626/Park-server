@@ -43,39 +43,6 @@ class ticketController {
   }
 
 
-  async buyTicket(req, res, next) { //покупка билетов
-    try {
-        const { name_attraction } = req.body;
-        const { email, role } = req.user;
-        const user = await User.findOne({ where: { email } });
-        const attraction = await Attraction.findOne({ where: { name: name_attraction } });
-
-        // Проверяем, есть ли уже купленный билет на этот аттракцион
-        const existingTicket = await Ticket.findOne({
-            where: { name: attraction.name, username: user.email, status: 'ACTIVE' }
-        });
-        if (existingTicket) {
-            return res.json("У вас уже есть такой билет");
-        }
-
-        if (!attraction) {
-            return next(ApiError.badRequest('Атракцион не найден'));
-        }
-        if (user.balance < attraction.price) {
-            return next(ApiError.badRequest('Недостаточно средств на балансе'));
-        }
-        await user.update({ balance: user.balance - attraction.price });
-        const ticket = await Ticket.create({
-            name: attraction.name,
-            username: user.email,
-            userId: user.email,
-            attractionId: attraction.id
-        });
-        res.json(ticket);
-    } catch (e) {
-        next(ApiError.badRequest(e.message));
-    }
-}
 
 async useTicket(req, res, next) {
   const { name } = req.body;
