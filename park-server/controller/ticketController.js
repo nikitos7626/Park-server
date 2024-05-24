@@ -8,36 +8,53 @@ const config = require('../config')
 
 class ticketController {
 
-  async buyTicket(req, res, next) {//покупка билетов
+  async buyTicket(req, res, next) { //покупка билетов
     try {
       const { name_attraction } = req.body;
       const { email, role } = req.user;
-      const user = await User.findOne({ where: { email } })
-      const attraction = await Attraction.findOne({ where: { name: name_attraction } })
-
+  
+      console.log('Запрос на покупку билета:', { name_attraction, email, role }); // Логирование запроса
+  
+      const user = await User.findOne({ where: { email } });
+      const attraction = await Attraction.findOne({ where: { name: name_attraction } });
+  
+      console.log('Найденный пользователь:', user); // Логирование найденного пользователя
+      console.log('Найденный аттракцион:', attraction); // Логирование найденного аттракциона
+  
       // Проверяем, есть ли уже купленный билет на этот аттракцион
       const existingTicket = await Ticket.findOne({
         where: { name: attraction.name, username: user.email, status: 'ACTIVE' }
       });
       if (existingTicket) {
-        return res.json("У вас уже есть такой билет")
+        console.log('У пользователя уже есть билет на этот аттракцион:', existingTicket); // Логирование существующего билета
+        return res.json("У вас уже есть такой билет");
       }
-
+  
       if (!attraction) {
+        console.error('Атракцион не найден:', name_attraction); // Логирование ошибки
         return next(ApiError.badRequest('Атракцион не найден'));
       }
       if (user.balance < attraction.price) {
+        console.error('Недостаточно средств на балансе:', user.balance, attraction.price); // Логирование ошибки
         return next(ApiError.badRequest('Недостаточно средств на балансе'));
       }
+  
+      console.log('Обновление баланса пользователя:', user.balance, attraction.price); // Логирование обновления баланса
+  
       await user.update({ balance: user.balance - attraction.price });
+  
       const ticket = await Ticket.create({
         name: attraction.name,
         username: user.email,
         userId: user.id,
         attractionId: attraction.id
-      })
+      });
+  
+      console.log('Созданный билет:', ticket); // Логирование созданного билета
+  
       res.json(ticket);
     } catch (e) {
+      console.error('Ошибка при покупке билета:', e); // Логирование ошибки
       next(ApiError.badRequest(e.message));
     }
   }

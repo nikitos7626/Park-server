@@ -11,7 +11,7 @@ const User = Sequelize.define('user', {
 
 const Ticket = Sequelize.define('ticket', {
     ticket_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: {type:DataTypes.STRING,unique:true},
+    name: {type:DataTypes.STRING,},
     username: { type: DataTypes.STRING },   
     status: { type: DataTypes.STRING, defaultValue: 'ACTIVE' }, 
     used_at: { type: DataTypes.DATE }
@@ -19,7 +19,7 @@ const Ticket = Sequelize.define('ticket', {
 
 const Attraction = Sequelize.define('attraction', {
     attraction_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING },
+    name: { type: DataTypes.STRING,unique:true },
     price: { type: DataTypes.FLOAT },
     working_hours: { type: DataTypes.STRING }
 });
@@ -31,7 +31,7 @@ const Attendance = Sequelize.define('attendance', {//Содержит инфор
 });
 
 
-
+    
 User.hasMany(Ticket);
 Ticket.belongsTo(User);
 
@@ -44,7 +44,7 @@ Attraction.hasMany(Ticket);
 Ticket.belongsTo(Attraction);
 
 
-
+    
 module.exports = {
     User,
     Ticket,

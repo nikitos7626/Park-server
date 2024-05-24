@@ -1,3 +1,4 @@
+const { where } = require('../db')
 const ApiError = require('../error/Apierror')
 const { Attraction } = require('../models/models')
 
@@ -13,6 +14,15 @@ class AttractionController{
             next(ApiError.badRequest('Неправильно введены значения аттракиона'))
         }
     }
+
+    async getAllAttractions(req, res, next) {
+        try {
+          const attractions = await Attraction.findAll();
+          res.json(attractions);
+        } catch (error) {
+          next(ApiError.badRequest);
+        }
+      }
 }
 
 module.exports = new(AttractionController)

@@ -28,23 +28,33 @@ class userController {
         const token = generateJwt(user.id, user.email, user.role);
         return res.json({ token });
     }
-
-    async balance(req, res, next) {
-        const {balance } = req.body;    
-        const email =req.user.email;
+    
+    async getBalance(req, res, next) {
+        const email = req.user.email; // Получаем email пользователя из токена авторизации
         const user = await User.findOne({ where: { email } });
         if (!user) {
             return next(ApiError.badRequest('Пользователь не найден'));
         }
 
-        const currentBalance = user.balance || 0;
-        const newBalance = currentBalance + Number(balance);
+        return res.json({ balance: user.balance }); // Возвращаем баланс пользователя
+    }
 
+    async balance(req, res, next) {
+        const { balance } = req.body;    
+        const email = req.user.email;
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+          return next(ApiError.badRequest('Пользователь не найден'));
+        }
+      
+        const currentBalance = user.balance !== undefined ? user.balance : 0;
+        const newBalance = currentBalance + Number(balance);
+      
         user.balance = newBalance;
         await user.save();
-
+      
         return res.json({ message: 'Ваш баланс успешно пополнен', balance: user.balance });
-    }
+      }
 
     async login(req, res, next) {
         const { email, password } = req.body;
@@ -63,6 +73,25 @@ class userController {
     async check(req, res, next) {
         const token = generateJwt(req.user.id, req.user.email, req.user.role)
         return res.json({ token })
+    }
+
+    async getAllUsers(req, res, next) {
+        try {
+          const users = await User.findAll();
+          res.json(users);
+        } catch (error) {
+          next(ApiError.badRequest);
+        }
+      }
+
+      async getUser(req, res, next) {
+        const email = req.user.email; // Получаем email пользователя из токена авторизации
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            return next(ApiError.badRequest('Пользователь не найден'));
+        }
+
+        return res.json({user}); // Возвращаем баланс пользователя
     }
 }
 
