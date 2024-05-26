@@ -8,6 +8,7 @@ const config = require('../config')
 
 class ticketController {
 
+  
   async buyTicket(req, res, next) { //покупка билетов
     try {
       const { name_attraction } = req.body;
@@ -58,7 +59,7 @@ class ticketController {
       next(ApiError.badRequest(e.message));
     }
   }
-
+  
 
 
 async useTicket(req, res, next) {
@@ -112,6 +113,23 @@ async useTicket(req, res, next) {
 
   await ticket.update({ status: 'USED', used_at: new Date() });
   res.json({ message: 'Билет успешно использован' });
+}
+  
+async getUserTicket(req, res, next) {
+  try {
+    const { email } = req.user;
+
+    // Find tickets belonging to the user
+    const tickets = await Ticket.findAll({
+      where: { username: email }, // Use 'username' field for matching
+    });
+
+    res.json(tickets); // Send the list of tickets as a response
+  } catch (e) {
+    console.error('Ошибка при получении билетов:', e); 
+    next(ApiError.badRequest(e.message)); // Use ApiError for consistent error handling
+  }
 }}
+
 
 module.exports = new ticketController()
