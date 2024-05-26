@@ -119,15 +119,14 @@ async getUserTicket(req, res, next) {
   try {
     const { email } = req.user;
 
-    // Find tickets belonging to the user
     const tickets = await Ticket.findAll({
-      where: { username: email }, // Use 'username' field for matching
+      where: { username: email },
     });
 
-    res.json(tickets); // Send the list of tickets as a response
+    res.json(tickets);
   } catch (e) {
     console.error('Ошибка при получении билетов:', e); 
-    next(ApiError.badRequest(e.message)); // Use ApiError for consistent error handling
+    next(ApiError.badRequest(e.message));
   }
 }}
 
