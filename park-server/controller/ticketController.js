@@ -106,9 +106,10 @@ async useTicket(req, res, next) {
   }
 
   await Attendance.create({
-      userId: user.email,
+      userId: user.userId,
       ticketId: ticket.ticket_id,
-      visit_time: new Date()
+      visit_time: new Date(),
+      username: user.email
   });
 
   await ticket.update({ status: 'USED', used_at: new Date() });

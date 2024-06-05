@@ -27,6 +27,7 @@ const Attraction = Sequelize.define('attraction', {
 
 const Attendance = Sequelize.define('attendance', {//Содержит информацию о времени посещения
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    username: { type: DataTypes.STRING },
     visit_time: { type: DataTypes.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
 });
 
