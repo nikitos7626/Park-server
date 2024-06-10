@@ -14,21 +14,18 @@ class ticketController {
       const { name_attraction } = req.body;
       const { email, role } = req.user;
   
-      console.log('Запрос на покупку билета:', { name_attraction, email, role }); // Логирование запроса
+      console.log('Запрос на покупку билета:', { name_attraction, email, role }); 
   
       const user = await User.findOne({ where: { email } });
       const attraction = await Attraction.findOne({ where: { name: name_attraction } });
-  
-      console.log('Найденный пользователь:', user); // Логирование найденного пользователя
-      console.log('Найденный аттракцион:', attraction); // Логирование найденного аттракциона
-  
+
       // Проверяем, есть ли уже купленный билет на этот аттракцион
       const existingTicket = await Ticket.findOne({
         where: { name: attraction.name, username: user.email, status: 'ACTIVE' }
       });
       if (existingTicket) {
         console.log('У пользователя уже есть билет на этот аттракцион:', existingTicket); // Логирование существующего билета
-        return res.json("У вас уже есть такой билет");
+        return next(ApiError.badRequest("У вас уже есть такой билет"));
       }
   
       if (!attraction) {
@@ -56,7 +53,7 @@ class ticketController {
       res.json(ticket);
     } catch (e) {
       console.error('Ошибка при покупке билета:', e); // Логирование ошибки
-      next(ApiError.badRequest(e.message));
+      next(ApiError.internal(e.message));
     }
   }
   
@@ -82,7 +79,7 @@ async useTicket(req, res, next) {
   });
 
   if (!ticket) {
-      return next(ApiError.badRequest('Билет не найден или уже использован'));
+      return next(ApiError.badRequest('Билет  уже использован'));
   }
 
   if (!attraction.working_hours) {
@@ -101,7 +98,7 @@ async useTicket(req, res, next) {
       (currentTime.getHours() === endHours && currentTime.getMinutes() >= endMinutes)
   ) {
       return next(
-          ApiError.badRequest('Сейчас атракцион закрыт. Пожалуйста, выберите другое время.')
+          ApiError.badRequest('Сейчас атракцион закрыт. Приходите другое время.')
       );
   }
 
