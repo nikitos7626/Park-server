@@ -126,7 +126,52 @@ async getUserTicket(req, res, next) {
     console.error('Ошибка при получении билетов:', e); 
     next(ApiError.badRequest(e.message));
   }
-}}
+  
+}
+async cancelTicket(req, res, next) {
+  try {
+    const { name } = req.body;
+    const { email } = req.user;
+
+    const user = await User.findOne({ where: { email } });
+    const ticket = await Ticket.findOne({
+      where: {
+        name: name,
+        username: user.email,
+        status: 'ACTIVE'
+      }
+    });
+
+    if (!ticket) {
+      return next(ApiError.badRequest('Билет не найден'));
+    }
+
+    const purchaseTime = new Date(ticket.createdAt);
+    const currentTime = new Date();
+    const timeDifference = currentTime - purchaseTime;
+    const hoursDifference = timeDifference / (1000 * 60 * 60); // Разница во времени в часах
+
+    // Проверяем, прошло ли 24 часа с момента покупки
+    if (hoursDifference > 24) {
+      return next(ApiError.badRequest('Отмена билета возможна только за 24 часа до покупки'));
+    }
+
+    console.log(ticket.price);
+    // Возвращаем деньги на баланс пользователя
+    await user.update({ balance: user.balance + ticket.price });
+  
+
+    // Меняем статус билета на "отмененный"
+    await ticket.update({ status: 'CANCELED' });
+
+    res.json({ message: 'Билет успешно отменен, деньги возвращены на баланс' });
+  } catch (e) {
+    console.error('Ошибка при отмене билета:', e);
+    next(ApiError.internal(e.message));
+  }
+}
+}
+
 
 
 module.exports = new ticketController()
