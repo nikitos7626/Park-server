@@ -5,10 +5,33 @@ const { Sequelize } = require('sequelize');
 const moment = require('moment'); // Import moment for date manipulation
 
 class AttendanceController {
-  async getOverallAttendance(req, res, next) {//количество посещений за всё время
+  async getOverallAttendance(req, res, next) {
     try {
-      const totalAttendance = await Attendance.count();
-      res.json({ message: 'Overall attendance:', data: totalAttendance }); // Corrected message
+      // Получаем количество билетов по каждому статусу
+      const ticketCounts = await Ticket.findAll({
+        attributes: [
+          'status',
+          [Sequelize.fn('COUNT', Sequelize.col('status')), 'count'],
+        ],
+        group: ['status'],
+        raw: true,
+      });
+
+      // Преобразуем результаты в формат, подходящий для диаграммы
+      const data = ticketCounts.map((count) => ({
+        name: count.status,
+        value: count.count,
+      }));
+
+      // Считаем общее количество билетов
+      const overallAttendance = data.reduce((sum, item) => sum + item.value, 0);
+
+      // Отправляем ответ с данными о посещаемости
+      res.json({
+        message: 'Overall attendance:',
+        data,
+        overallAttendance,
+      });
     } catch (error) {
       next(ApiError.badRequest(error));
     }
