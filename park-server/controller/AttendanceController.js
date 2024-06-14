@@ -2,12 +2,12 @@ const ApiError = require('../error/Apierror');
 const { Ticket, Attendance, Attraction } = require('../models/models');
 const { Op } = require('sequelize');
 const { Sequelize } = require('sequelize');
-const moment = require('moment'); // Import moment for date manipulation
+const moment = require('moment');
 
 class AttendanceController {
   async getOverallAttendance(req, res, next) {
     try {
-      // Получаем количество билетов по каждому статусу
+
       const ticketCounts = await Ticket.findAll({
         attributes: [
           'status',
@@ -17,32 +17,33 @@ class AttendanceController {
         raw: true,
       });
 
-      // Преобразуем результаты в формат, подходящий для диаграммы
+ 
       const data = ticketCounts.map((count) => ({
         name: count.status,
         value: count.count,
       }));
 
-      // Считаем общее количество билетов
+
       const overallAttendance = data.reduce((sum, item) => sum + item.value, 0);
 
-      // Отправляем ответ с данными о посещаемости
-      res.json({
+
+      res.json({  
         message: 'Overall attendance:',
-        data,
-        overallAttendance,
+        data, 
+        overallAttendance:overallAttendance,
       });
     } catch (error) {
       next(ApiError.badRequest(error));
     }
   }
+  
 
-  async getWeeklyAttendanceByDay(req, res, next) {//количество посещений в день
+  async getWeeklyAttendanceByDay(req, res, next) {
     try {
       const currentDate = new Date();
-      const startOfWeek = moment(currentDate).startOf('week').toDate();
-      const endOfWeek = moment(currentDate).endOf('week').toDate();
-
+      const startOfWeek = moment(currentDate).startOf('isoWeek').toDate();
+      const endOfWeek = moment(currentDate).endOf('isoWeek').toDate();
+  
       const weeklyAttendanceByDay = await Attendance.findAll({
         attributes: [
           [Sequelize.fn('DATE', Sequelize.col('visit_time')), 'day'],
@@ -54,14 +55,27 @@ class AttendanceController {
           },
         },
         group: ['day'],
+        order: [['day', 'ASC']],
         raw: true,
       });
-
-      res.json({ message: 'Weekly attendance by day:', data: weeklyAttendanceByDay });
+  
+      const formattedData = Array.from({ length: 7 }, (_, index) => {
+        const dayDate = moment(startOfWeek).add(index, 'days').toDate();
+        const dayAttendance = weeklyAttendanceByDay.find(
+          (item) => moment(item.day).isSame(dayDate, 'day')
+        );
+        return {
+          day: moment(dayDate).format('DD.MM'),
+          count: dayAttendance ? dayAttendance.count : 0,
+        };
+      });
+  
+      res.json({ message: 'Weekly attendance by day:', data: formattedData });
     } catch (error) {
       next(ApiError.badRequest(error));
     }
   }
+  
 }
 
 module.exports = new AttendanceController();

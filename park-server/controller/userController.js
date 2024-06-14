@@ -30,13 +30,13 @@ class userController {
     }
     
     async getBalance(req, res, next) {
-        const email = req.user.email; // Получаем email пользователя из токена авторизации
+        const email = req.user.email;
         const user = await User.findOne({ where: { email } });
         if (!user) {
             return next(ApiError.badRequest('Пользователь не найден'));
         }
 
-        return res.json({ balance: user.balance }); // Возвращаем баланс пользователя
+        return res.json({ balance: user.balance }); 
     }
 
     async balance(req, res, next) {
@@ -85,13 +85,13 @@ class userController {
       }
 
       async getUser(req, res, next) {
-        const email = req.user.email; // Получаем email пользователя из токена авторизации
+        const email = req.user.email; 
         const user = await User.findOne({ where: { email } });
         if (!user) {
             return next(ApiError.badRequest('Пользователь не найден'));
         }
 
-        return res.json({user}); // Возвращаем баланс пользователя
+        return res.json({user});
     }
 }
 

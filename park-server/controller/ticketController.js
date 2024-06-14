@@ -9,7 +9,7 @@ const config = require('../config')
 class ticketController {
 
   
-  async buyTicket(req, res, next) { //покупка билетов
+  async buyTicket(req, res, next) { 
     try {
       const { name_attraction } = req.body;
       const { email, role } = req.user;
@@ -19,25 +19,25 @@ class ticketController {
       const user = await User.findOne({ where: { email } });
       const attraction = await Attraction.findOne({ where: { name: name_attraction } });
 
-      // Проверяем, есть ли уже купленный билет на этот аттракцион
+   
       const existingTicket = await Ticket.findOne({
         where: { name: attraction.name, username: user.email, status: 'ACTIVE' }
       });
       if (existingTicket) {
-        console.log('У пользователя уже есть билет на этот аттракцион:', existingTicket); // Логирование существующего билета
+        console.log('У пользователя уже есть билет на этот аттракцион:', existingTicket); 
         return next(ApiError.badRequest("У вас уже есть такой билет"));
       }
   
       if (!attraction) {
-        console.error('Атракцион не найден:', name_attraction); // Логирование ошибки
+        console.error('Атракцион не найден:', name_attraction);
         return next(ApiError.badRequest('Атракцион не найден'));
       }
       if (user.balance < attraction.price) {
-        console.error('Недостаточно средств на балансе:', user.balance, attraction.price); // Логирование ошибки
+        console.error('Недостаточно средств на балансе:', user.balance, attraction.price); 
         return next(ApiError.badRequest('Недостаточно средств на балансе'));
       }
   
-      console.log('Обновление баланса пользователя:', user.balance, attraction.price); // Логирование обновления баланса
+      console.log('Обновление баланса пользователя:', user.balance, attraction.price);
   
       await user.update({ balance: user.balance - attraction.price });
   
@@ -48,11 +48,11 @@ class ticketController {
         attractionId: attraction.id
       });
   
-      console.log('Созданный билет:', ticket); // Логирование созданного билета
+      console.log('Созданный билет:', ticket); 
   
       res.json(ticket);
     } catch (e) {
-      console.error('Ошибка при покупке билета:', e); // Логирование ошибки
+      console.error('Ошибка при покупке билета:', e); 
       next(ApiError.internal(e.message));
     }
   }
@@ -149,19 +149,19 @@ async cancelTicket(req, res, next) {
     const purchaseTime = new Date(ticket.createdAt);
     const currentTime = new Date();
     const timeDifference = currentTime - purchaseTime;
-    const hoursDifference = timeDifference / (1000 * 60 * 60); // Разница во времени в часах
+    const hoursDifference = timeDifference / (1000 * 60 * 60); 
 
-    // Проверяем, прошло ли 24 часа с момента покупки
+   
     if (hoursDifference > 24) {
       return next(ApiError.badRequest('Отмена билета возможна только за 24 часа до покупки'));
     }
 
     console.log(ticket.price);
-    // Возвращаем деньги на баланс пользователя
+    
     await user.update({ balance: user.balance + ticket.price });
   
 
-    // Меняем статус билета на "отмененный"
+
     await ticket.update({ status: 'CANCELED' });
 
     res.json({ message: 'Билет успешно отменен, деньги возвращены на баланс' });
@@ -171,7 +171,6 @@ async cancelTicket(req, res, next) {
   }
 }
 }
-
 
 
 module.exports = new ticketController()
