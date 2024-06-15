@@ -29,6 +29,30 @@ class userController {
         return res.json({ token });
     }
     
+    async blockUser(req, res, next) {
+        const { email } = req.body; // Получаем email пользователя для блокировки
+
+        if (!email) {
+            return next(ApiError.badRequest('Не указан email пользователя'));
+        }
+
+        try {
+            const user = await User.findOne({ where: { email } });
+
+            if (!user) {
+                return next(ApiError.badRequest('Пользователь не найден'));
+            }
+
+            // Блокировка пользователя (например, изменение роли)
+            user.role = 'Banned'; // Предполагаем, что 'Banned' - это роль заблокированного пользователя
+            await user.save();
+
+            return res.json({ message: 'Пользователь успешно заблокирован' });
+        } catch (error) {
+            next(ApiError.badRequest('Ошибка при блокировке пользователя'));
+        }
+    }
+    
     async getBalance(req, res, next) {
         const email = req.user.email;
         const user = await User.findOne({ where: { email } });

@@ -11,4 +11,5 @@ router.post('/addmoney',authMiddleware,userController.balance)
 router.get('/getBalance',authMiddleware,userController.getBalance)
 router.get('/getAllUsers',userController.getAllUsers)
 router.get('/getUser',authMiddleware,userController.getUser)
+router.post('/banUser',authMiddleware,userController.blockUser)
 module.exports = router
