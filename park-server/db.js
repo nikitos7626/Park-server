@@ -3,8 +3,8 @@ const { Sequelize } = require('sequelize');
 
 module.exports = new Sequelize(
     "online_park",
-    "root",
-    "1234",
+    "nikitos",
+    "123",
     {
         dialect: "mysql",
         host: "localhost",
